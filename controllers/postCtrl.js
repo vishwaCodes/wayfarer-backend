@@ -15,6 +15,7 @@ const show = (req, res) => {
 };
 
 const create = (req, res) => {
+  console.log(req.body)
   const city = req.body.city;
   // console.log(city)
 
@@ -26,7 +27,7 @@ const create = (req, res) => {
   db.Post.create(newPost, (err, newPost) => {
     if (err) return console.log(err);
 
-    db.City.find({ city: { $regex: `.*${city}.*` } }, (err, foundCity) => {
+    db.City.findById(city, (err, foundCity) => {
       foundCity.posts.push(newPost._id);
       foundCity.save((err, savedCity) => {
         res.json(savedCity);

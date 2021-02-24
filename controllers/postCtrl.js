@@ -15,9 +15,23 @@ const show = (req, res) => {
 };
 
 const create = (req, res) => {
-  db.Post.create(req.body, (err, newPost) => {
+  const city = req.body.city;
+  // console.log(city)
+
+  const newPost = {
+    title: req.body.title,
+    author: req.body.author,
+    body: req.body.body,
+  };
+  db.Post.create(newPost, (err, newPost) => {
     if (err) return console.log(err);
-    res.json(newPost);
+
+    db.City.find({ city: { $regex: `.*${city}.*` } }, (err, foundCity) => {
+      foundCity.posts.push(newPost._id);
+      foundCity.save((err, savedCity) => {
+        res.json(savedCity);
+      });
+    });
   });
 };
 
